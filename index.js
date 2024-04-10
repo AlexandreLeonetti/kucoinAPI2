@@ -137,6 +137,6 @@ const h8= "50 59 7,15,23 * * *";
 const h12 = "50 59 11,23 * * *";
 const d1  = "47 59 23 * * *";
 
-let interval = schedule.scheduleJob(m15, function(){
-    entry_buy("TON-USDT", 0.5, 0.005, 0.01);
+let interval = schedule.scheduleJob(h8, function(){
+    entry_buy("TON-USDT", 2.5, 0.02, 0.03);
 });
