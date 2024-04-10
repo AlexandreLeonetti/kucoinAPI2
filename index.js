@@ -32,7 +32,52 @@ async function getAvg( mkt ){
 	return avg;
 }
 
+
+async function entry_buy(symbol, size, stopLoss, limitLoss){
+		
+	let marketId = "";
+	const 	uuid4 = uuid.v4()
+
+	let str_size = size.toFixed(3);
+	let size_stop= (size*0.995).toFixed(3);
+
+      	let marketParams = {
+          clientOid : uuid4,
+          side      : "buy",
+          symbol    : symbol, //"TON-USDT",
+          type      : "market",
+          //tradeType : "MARGIN_TRADE",
+          size      : str_size,//"1",
+          isIsolated: true,
+          marginModel:"isolated"
+      	}
+
+        const market1 = await API.rest.Margin.MarginInfo.postMarginOrder({
+          ...marketParams
+      	});
+
+	const avgBuy = await getAvg(market1);
+	let stop_price = (avgBuy*(1-stopLoss)).toFixed(3);
+	let lim_price  = (avgBuy*(1-limitLoss)).toFixed(3);
+
+	await sleep(1000);
+    	const uuid4b = uuid.v4();
+      	const sl1 =  await API.rest.Trade.StopOrder.postStopOrder({
+          clientOid: uuid4b,
+          side        :"sell",
+          symbol      :"TON-USDT",
+          stop        :"loss",
+          stopPrice   :stop_price,
+          price       :lim_price,
+          size        :size_stop,
+          tradeType   :"MARGIN_ISOLATED_TRADE"
+
+      	});
+
+}
+
 /** API use */
+/*
 const main = async () => {
 //      const getTimestampRl = await API.rest.Others.getTimestamp();
 
@@ -80,7 +125,7 @@ const uuid4 = uuid.v4()
      
 
 };
-
+*/
 /* call main on schedule */
 
 const m1 = "58 * * * * * ";
@@ -92,6 +137,6 @@ const h8= "50 59 7,15,23 * * *";
 const h12 = "50 59 11,23 * * *";
 const d1  = "47 59 23 * * *";
 
-let interval = schedule.scheduleJob(m5, function(){
-    main();
+let interval = schedule.scheduleJob(m15, function(){
+    entry_buy("TON-USDT", 0.5, 0.005, 0.01);
 });
