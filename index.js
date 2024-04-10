@@ -12,11 +12,9 @@ API.init(require('./config'));
 
 /** API use */
 const main = async () => {
-      const getTimestampRl = await API.rest.Others.getTimestamp();
-      console.log(getTimestampRl.data);
-      const st = await API.rest.Others.getStatus();
-        console.log(st);
+//      const getTimestampRl = await API.rest.Others.getTimestamp();
 
+    let marketId = "";
 const uuid4 = uuid.v4()
     console.log(uuid4)
 
@@ -36,8 +34,17 @@ const uuid4 = uuid.v4()
           ...marketParams
       });
       console.log(market1);
-
-    await sleep(1000);
+      if(Object.hasOwn(market1, "data")){
+          // get data...
+          marketId = market1.data.orderId;
+          /*
+           * get order details, and avg buying price */
+          const details = API.rest.Trade.Orders.getOrderByID(marketId);
+          console.log(details);
+          console.log(details.data);
+      }
+      
+   /* await sleep(1000);
     const uuid4b = uuid.v4();
       const sl1 =  await API.rest.Trade.StopOrder.postStopOrder({
           clientOid: uuid4b,
@@ -52,6 +59,7 @@ const uuid4 = uuid.v4()
       });
 
      console.log(sl1);
+     */
 
 };
 
